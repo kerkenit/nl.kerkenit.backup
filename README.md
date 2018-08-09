@@ -2,7 +2,8 @@
 App to backup files and folders at shutdown.
 
 # Setup
-- Run the app normaly and add all backup locations
+Download the app [backup.exe](https://github.com/kerkenit/nl.kerkenit.backup/releases/download/v1.0.0/Backup.exe)
+Run the app normaly and add all backup locations
 
 # Unattended usage
 - Run **Win+R**
