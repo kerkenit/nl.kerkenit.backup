@@ -217,7 +217,7 @@
             this.tbDate.Name = "tbDate";
             this.tbDate.Size = new System.Drawing.Size(275, 20);
             this.tbDate.TabIndex = 1;
-            this.tbDate.Text = "dd-MM-yyyy";
+            this.tbDate.Text = "d dddd MMMM yyyy";
             // 
             // lbDate
             // 

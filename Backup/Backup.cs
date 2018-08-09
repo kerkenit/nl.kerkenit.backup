@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Backup
@@ -17,6 +11,10 @@ namespace Backup
         IniFile ini = new IniFile();
         public Backup(string[] args)
         {
+            CultureInfo ci = new CultureInfo("nl-NL");
+            Thread.CurrentThread.CurrentCulture = ci;
+            Thread.CurrentThread.CurrentUICulture = ci;
+
             InitializeComponent();
             if ((args.Length > 0 && args[0] == "backup") || (args.Length > 1 && args[1] == "backup"))
             {
@@ -40,37 +38,55 @@ namespace Backup
                     }
                 }
 
-                string DestinationPath = string.Format("{0}\\{1}{2:" + dateFormat + "}", ini.ReadKeyValuePairs("Destination")[0].Split('=')[1], prefix, DateTime.Now);
-                if (!Directory.Exists(DestinationPath))
+                string DestinationPath = string.Format("{0}\\{1} {2:" + dateFormat + "}", ini.ReadKeyValuePairs("Destination")[0].Split('=')[1], prefix, DateTime.Now);
+
+#if DEBUG
+                if (Directory.Exists(DestinationPath))
+                {
+                    Directory.Delete(DestinationPath, true);
+                }
+#endif
+                    if (!Directory.Exists(DestinationPath))
                 {
                     Directory.CreateDirectory(DestinationPath);
                     foreach (string source in ini.ReadKeyValuePairs("Source"))
                     {
                         FileInfo fInfo = new FileInfo(source.Split('=')[1]);
-                        if(fInfo.Exists)
+                        if (fInfo.Exists)
                         {
-                            fInfo.CopyTo(DestinationPath);
+                            fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name);
                         }
                         else
                         {
                             DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
-                            if(dInfo.Exists)
+                            string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
+                            string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
+                            double length = dirs.Length + files.Length;
+                            double i = 1;
+                            if (dInfo.Exists)
                             {
                                 //Now Create all of the directories
-                                foreach (string dirPath in Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories))
+
+                                foreach (string dirPath in dirs)
                                 {
                                     Directory.CreateDirectory(dirPath.Replace(dInfo.Parent.FullName, DestinationPath));
+                                    progressBar1.Value = (int)Math.Floor((100 / length) * i);
+                                    i++;
                                 }
 
                                 //Copy all the files & Replaces any files with the same name
-                                foreach (string newPath in Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories))
+                                foreach (string newPath in files)
                                 {
                                     File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
+                                    progressBar1.Value = (int)Math.Floor((100 / length) * i);
+                                    i++;
+
                                 }
                             }
                         }
                     }
                 }
+                Environment.Exit(-1);
             }
             try
             {
