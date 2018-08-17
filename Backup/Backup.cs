@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -37,16 +38,46 @@ namespace Backup
                             break;
                     }
                 }
+                string folderpath = ini.ReadKeyValuePairs("Destination")[0].Split('=')[1];
+                DirectoryInfo dir = new DirectoryInfo(folderpath);
 
-                string DestinationPath = string.Format("{0}\\{1} {2:" + dateFormat + "}", ini.ReadKeyValuePairs("Destination")[0].Split('=')[1], prefix, DateTime.Now);
+                DirectoryInfo[] backupdirs = dir.GetDirectories().OrderByDescending(p => p.CreationTime).ToArray();
+                int r = 0;
+                int remove = 30;
+                if ((args.Length > 1 && int.TryParse(args[1], out remove)) || (args.Length > 2 && int.TryParse(args[2], out remove)))
+                {
+                }
+                foreach (DirectoryInfo dInfo in backupdirs)
+                {
+                    r++;
+                    if (r > remove)
+                    {
+                        try
+                        {
+                            dInfo.Delete(true);
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                }
+                string DestinationPath = string.Format("{0}\\{1} {2:" + dateFormat + "}", folderpath, prefix, DateTime.Now);
 
 #if DEBUG
-                if (Directory.Exists(DestinationPath))
-                {
-                    Directory.Delete(DestinationPath, true);
-                }
+                    try
+                    {
+                        if (Directory.Exists(DestinationPath))
+                        {
+                            Directory.Delete(DestinationPath, true);
+                        }
+                    }
+                    catch
+                    {
+
+                    }
 #endif
-                    if (!Directory.Exists(DestinationPath))
+                if (!Directory.Exists(DestinationPath))
                 {
                     Directory.CreateDirectory(DestinationPath);
                     foreach (string source in ini.ReadKeyValuePairs("Source"))
