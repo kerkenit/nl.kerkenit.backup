@@ -43,16 +43,17 @@
             this.tbFile = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.gbSave = new System.Windows.Forms.GroupBox();
+            this.btTarget = new System.Windows.Forms.Button();
+            this.btSave = new System.Windows.Forms.Button();
             this.tbTarget = new System.Windows.Forms.TextBox();
             this.tbName = new System.Windows.Forms.TextBox();
             this.tbDate = new System.Windows.Forms.TextBox();
-            this.lbDate = new System.Windows.Forms.Label();
-            this.btSave = new System.Windows.Forms.Button();
-            this.lbName = new System.Windows.Forms.Label();
             this.lbTarget = new System.Windows.Forms.Label();
-            this.btTarget = new System.Windows.Forms.Button();
+            this.lbName = new System.Windows.Forms.Label();
+            this.lbDate = new System.Windows.Forms.Label();
             this.folderBrowserDialogTarget = new System.Windows.Forms.FolderBrowserDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.btBackup = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -142,7 +143,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(318, 61);
+            this.tabPage2.Size = new System.Drawing.Size(318, 109);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Bestand";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -196,6 +197,26 @@
             this.gbSave.TabStop = false;
             this.gbSave.Text = "Inplannen";
             // 
+            // btTarget
+            // 
+            this.btTarget.Location = new System.Drawing.Point(268, 72);
+            this.btTarget.Name = "btTarget";
+            this.btTarget.Size = new System.Drawing.Size(58, 23);
+            this.btTarget.TabIndex = 3;
+            this.btTarget.Text = "Bladeren";
+            this.btTarget.UseVisualStyleBackColor = true;
+            this.btTarget.Click += new System.EventHandler(this.btTarget_Click);
+            // 
+            // btSave
+            // 
+            this.btSave.Location = new System.Drawing.Point(9, 100);
+            this.btSave.Name = "btSave";
+            this.btSave.Size = new System.Drawing.Size(75, 23);
+            this.btSave.TabIndex = 6;
+            this.btSave.Text = "Opslaan";
+            this.btSave.UseVisualStyleBackColor = true;
+            this.btSave.Click += new System.EventHandler(this.btSave_Click);
+            // 
             // tbTarget
             // 
             this.tbTarget.Location = new System.Drawing.Point(51, 74);
@@ -217,35 +238,7 @@
             this.tbDate.Name = "tbDate";
             this.tbDate.Size = new System.Drawing.Size(275, 20);
             this.tbDate.TabIndex = 1;
-            this.tbDate.Text = "d dddd MMMM yyyy";
-            // 
-            // lbDate
-            // 
-            this.lbDate.AutoSize = true;
-            this.lbDate.Location = new System.Drawing.Point(6, 21);
-            this.lbDate.Name = "lbDate";
-            this.lbDate.Size = new System.Drawing.Size(38, 13);
-            this.lbDate.TabIndex = 0;
-            this.lbDate.Text = "Datum";
-            // 
-            // btSave
-            // 
-            this.btSave.Location = new System.Drawing.Point(9, 100);
-            this.btSave.Name = "btSave";
-            this.btSave.Size = new System.Drawing.Size(75, 23);
-            this.btSave.TabIndex = 6;
-            this.btSave.Text = "Opslaan";
-            this.btSave.UseVisualStyleBackColor = true;
-            this.btSave.Click += new System.EventHandler(this.btSave_Click);
-            // 
-            // lbName
-            // 
-            this.lbName.AutoSize = true;
-            this.lbName.Location = new System.Drawing.Point(6, 49);
-            this.lbName.Name = "lbName";
-            this.lbName.Size = new System.Drawing.Size(35, 13);
-            this.lbName.TabIndex = 0;
-            this.lbName.Text = "Naam";
+            this.tbDate.Text = "dddd d MMMM yyyy";
             // 
             // lbTarget
             // 
@@ -256,15 +249,23 @@
             this.lbTarget.TabIndex = 0;
             this.lbTarget.Text = "Doel";
             // 
-            // btTarget
+            // lbName
             // 
-            this.btTarget.Location = new System.Drawing.Point(268, 72);
-            this.btTarget.Name = "btTarget";
-            this.btTarget.Size = new System.Drawing.Size(58, 23);
-            this.btTarget.TabIndex = 3;
-            this.btTarget.Text = "Bladeren";
-            this.btTarget.UseVisualStyleBackColor = true;
-            this.btTarget.Click += new System.EventHandler(this.btTarget_Click);
+            this.lbName.AutoSize = true;
+            this.lbName.Location = new System.Drawing.Point(6, 49);
+            this.lbName.Name = "lbName";
+            this.lbName.Size = new System.Drawing.Size(35, 13);
+            this.lbName.TabIndex = 0;
+            this.lbName.Text = "Naam";
+            // 
+            // lbDate
+            // 
+            this.lbDate.AutoSize = true;
+            this.lbDate.Location = new System.Drawing.Point(6, 21);
+            this.lbDate.Name = "lbDate";
+            this.lbDate.Size = new System.Drawing.Size(38, 13);
+            this.lbDate.TabIndex = 0;
+            this.lbDate.Text = "Datum";
             // 
             // folderBrowserDialogTarget
             // 
@@ -278,11 +279,22 @@
             this.progressBar1.TabIndex = 6;
             this.progressBar1.Visible = false;
             // 
+            // btBackup
+            // 
+            this.btBackup.Location = new System.Drawing.Point(683, 459);
+            this.btBackup.Name = "btBackup";
+            this.btBackup.Size = new System.Drawing.Size(75, 23);
+            this.btBackup.TabIndex = 7;
+            this.btBackup.Text = "Backup";
+            this.btBackup.UseVisualStyleBackColor = true;
+            this.btBackup.Click += new System.EventHandler(this.btBackup_Click);
+            // 
             // Backup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(770, 494);
+            this.Controls.Add(this.btBackup);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.gbSave);
             this.Controls.Add(this.tabControl1);
@@ -328,6 +340,7 @@
         private System.Windows.Forms.Button btTarget;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialogTarget;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button btBackup;
     }
 }
 

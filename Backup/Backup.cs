@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,12 +13,177 @@ namespace Backup
         IniFile ini = new IniFile();
         public Backup(string[] args)
         {
-            CultureInfo ci = new CultureInfo("nl-NL");
-            Thread.CurrentThread.CurrentCulture = ci;
-            Thread.CurrentThread.CurrentUICulture = ci;
+            try
+            {
+                CultureInfo ci = new CultureInfo("nl-NL");
+                Thread.CurrentThread.CurrentCulture = ci;
+                Thread.CurrentThread.CurrentUICulture = ci;
 
-            InitializeComponent();
-            if ((args.Length > 0 && args[0] == "backup") || (args.Length > 1 && args[1] == "backup"))
+                InitializeComponent();
+                if ((args.Length > 0 && args[0] == "backup") || (args.Length > 1 && args[1] == "backup"))
+                {
+                    backup(30);
+                    Environment.Exit(-1);
+                }
+                try
+                {
+                    if (ini != null)
+                    {
+                        foreach (string source in ini.ReadKeyValuePairs("Source"))
+                        {
+                            lbLocations.Items.Add(source.Split('=')[1]);
+                        }
+                        foreach (string destination in ini.ReadKeyValuePairs("Destination"))
+                        {
+                            tbTarget.Text = destination.Split('=')[1];
+                            folderBrowserDialogTarget.SelectedPath = destination.Split('=')[1];
+                        }
+
+                        foreach (string kvp in ini.ReadKeyValuePairs("Common"))
+                        {
+                            string[] common = kvp.Split('=');
+                            switch (common[0])
+                            {
+                                case "Prefix":
+                                    tbName.Text = common[1];
+                                    break;
+                                case "DateFormat":
+                                    tbDate.Text = common[1];
+                                    break;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                   // MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btDirBrowse_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DialogResult dr = folderBrowserDialog1.ShowDialog();
+                if (dr != DialogResult.Cancel)
+                {
+                    tbDir.Text = folderBrowserDialog1.SelectedPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btFileBrowse_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DialogResult dr = openFileDialog1.ShowDialog();
+                if (dr != DialogResult.Cancel)
+                {
+                    tbFile.Text = openFileDialog1.FileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void lbLocations_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btDelete.Enabled = true;
+        }
+
+        private void btFileAdd_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                foreach (string filename in openFileDialog1.FileNames)
+                {
+                    lbLocations.Items.Add(filename);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btDirAdd_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                lbLocations.Items.Add(folderBrowserDialog1.SelectedPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btDelete_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                lbLocations.Items.Remove(lbLocations.SelectedItem);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btTarget_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DialogResult dr = folderBrowserDialogTarget.ShowDialog();
+                if (dr != DialogResult.Cancel)
+                {
+                    tbTarget.Text = folderBrowserDialogTarget.SelectedPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ini.DeleteSection("Source");
+                for (int i = 0; i < lbLocations.Items.Count; i++)
+                {
+                    ini.WriteValue("Source", string.Format("Location{0}", i), lbLocations.Items[i].ToString());
+                }
+                ini.WriteValue("Destination", string.Format("Location{0}", 0), folderBrowserDialogTarget.SelectedPath);
+                ini.WriteValue("Common", "Prefix", tbName.Text);
+                ini.WriteValue("Common", "DateFormat", tbDate.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btBackup_Click(object sender, EventArgs e)
+        {
+            backup(30);
+        }
+
+        private void backup(int remove)
+        {
+            try
             {
                 lbLocations.Visible = false;
                 this.Height = 100;
@@ -43,10 +209,8 @@ namespace Backup
 
                 DirectoryInfo[] backupdirs = dir.GetDirectories().OrderByDescending(p => p.CreationTime).ToArray();
                 int r = 0;
-                int remove = 30;
-                if ((args.Length > 1 && int.TryParse(args[1], out remove)) || (args.Length > 2 && int.TryParse(args[2], out remove)))
-                {
-                }
+
+
                 foreach (DirectoryInfo dInfo in backupdirs)
                 {
                     r++;
@@ -65,17 +229,17 @@ namespace Backup
                 string DestinationPath = string.Format("{0}\\{1} {2:" + dateFormat + "}", folderpath, prefix, DateTime.Now);
 
 #if DEBUG
-                    try
+                try
+                {
+                    if (Directory.Exists(DestinationPath))
                     {
-                        if (Directory.Exists(DestinationPath))
-                        {
-                            Directory.Delete(DestinationPath, true);
-                        }
+                        Directory.Delete(DestinationPath, true);
                     }
-                    catch
-                    {
+                }
+                catch
+                {
 
-                    }
+                }
 #endif
                 if (!Directory.Exists(DestinationPath))
                 {
@@ -111,106 +275,28 @@ namespace Backup
                                     File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
                                     progressBar1.Value = (int)Math.Floor((100 / length) * i);
                                     i++;
-
                                 }
                             }
                         }
                     }
                 }
-                Environment.Exit(-1);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             try
             {
-                foreach (string source in ini.ReadKeyValuePairs("Source"))
+                DialogResult dr = MessageBox.Show("Backup is gemaakt. Wilt u de computer nu uitzetten?", "Backup gereed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dr == DialogResult.Yes)
                 {
-                    lbLocations.Items.Add(source.Split('=')[1]);
-                }
-                foreach (string destination in ini.ReadKeyValuePairs("Destination"))
-                {
-                    tbTarget.Text = destination.Split('=')[1];
-                    folderBrowserDialogTarget.SelectedPath = destination.Split('=')[1];
-                }
-
-                foreach (string kvp in ini.ReadKeyValuePairs("Common"))
-                {
-                    string[] common = kvp.Split('=');
-                    switch (common[0])
-                    {
-                        case "Prefix":
-                            tbName.Text = common[1];
-                            break;
-                        case "DateFormat":
-                            tbDate.Text = common[1];
-                            break;
-                    }
+                    Process.Start("shutdown.exe", "-s -t 0");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void btDirBrowse_Click(object sender, EventArgs e)
-        {
-            DialogResult dr = folderBrowserDialog1.ShowDialog();
-            if (dr != DialogResult.Cancel)
-            {
-                tbDir.Text = folderBrowserDialog1.SelectedPath;
-            }
-        }
-
-        private void btFileBrowse_Click(object sender, EventArgs e)
-        {
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr != DialogResult.Cancel)
-            {
-                tbFile.Text = openFileDialog1.FileName;
-            }
-        }
-
-        private void lbLocations_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            btDelete.Enabled = true;
-        }
-
-        private void btFileAdd_Click(object sender, EventArgs e)
-        {
-            foreach (string filename in openFileDialog1.FileNames)
-            {
-                lbLocations.Items.Add(filename);
-            }
-        }
-
-        private void btDirAdd_Click(object sender, EventArgs e)
-        {
-            lbLocations.Items.Add(folderBrowserDialog1.SelectedPath);
-        }
-
-        private void btDelete_Click(object sender, EventArgs e)
-        {
-            lbLocations.Items.Remove(lbLocations.SelectedItem);
-        }
-
-        private void btTarget_Click(object sender, EventArgs e)
-        {
-            DialogResult dr = folderBrowserDialogTarget.ShowDialog();
-            if (dr != DialogResult.Cancel)
-            {
-                tbTarget.Text = folderBrowserDialogTarget.SelectedPath;
-            }
-        }
-
-        private void btSave_Click(object sender, EventArgs e)
-        {
-            ini.DeleteSection("Source");
-            for (int i = 0; i < lbLocations.Items.Count; i++)
-            {
-                ini.WriteValue("Source", string.Format("Location{0}", i), lbLocations.Items[i].ToString());
-            }
-            ini.WriteValue("Destination", string.Format("Location{0}", 0), folderBrowserDialogTarget.SelectedPath);
-            ini.WriteValue("Common", "Prefix", tbName.Text);
-            ini.WriteValue("Common", "DateFormat", tbDate.Text);
         }
     }
 }
