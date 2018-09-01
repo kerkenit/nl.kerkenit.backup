@@ -249,33 +249,67 @@ namespace Backup
                         FileInfo fInfo = new FileInfo(source.Split('=')[1]);
                         if (fInfo.Exists)
                         {
-                            fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name);
+                            try
+                            {
+                                fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name, true);
+                            }
+                            catch
+                            {
+
+                            }
                         }
                         else
                         {
-                            DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
-                            string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
-                            string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
-                            double length = dirs.Length + files.Length;
-                            double i = 1;
-                            if (dInfo.Exists)
+                            try
                             {
-                                //Now Create all of the directories
-
-                                foreach (string dirPath in dirs)
+                                DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
+                                string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
+                                string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
+                                double length = dirs.Length + files.Length;
+                                double i = 1;
+                                if (dInfo.Exists)
                                 {
-                                    Directory.CreateDirectory(dirPath.Replace(dInfo.Parent.FullName, DestinationPath));
-                                    progressBar1.Value = (int)Math.Floor((100 / length) * i);
-                                    i++;
-                                }
+                                    //Now Create all of the directories
 
-                                //Copy all the files & Replaces any files with the same name
-                                foreach (string newPath in files)
-                                {
-                                    File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
-                                    progressBar1.Value = (int)Math.Floor((100 / length) * i);
-                                    i++;
+                                    foreach (string dirPath in dirs)
+                                    {
+                                        try
+                                        {
+                                            Directory.CreateDirectory(dirPath.Replace(dInfo.Parent.FullName, DestinationPath));
+                                        }
+                                        catch
+                                        {
+
+                                        }
+                                        finally
+                                        {
+                                            progressBar1.Value = (int)Math.Floor((100 / length) * i);
+                                            i++;
+                                        }
+                                    }
+
+                                    //Copy all the files & Replaces any files with the same name
+                                    foreach (string newPath in files)
+                                    {
+                                        try
+                                        {
+                                            File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
+                                        }
+                                        catch
+                                        {
+
+                                        }
+                                        finally
+                                        {
+                                            progressBar1.Value = (int)Math.Floor((100 / length) * i);
+                                            i++;
+                                        }
+                                    }
                                 }
+                            }
+                            catch
+                            {
+
                             }
                         }
                     }
