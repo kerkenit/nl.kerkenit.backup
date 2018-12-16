@@ -9,4 +9,3 @@ C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\bin\Debug\Backup.pdb
 C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\Debug\Backup.Properties.Resources.resources
 C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\Debug\Backup.csproj.GenerateResource.Cache
 C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\Debug\Backup.Backup.resources
-C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\Debug\Backup.csprojResolveAssemblyReference.cache

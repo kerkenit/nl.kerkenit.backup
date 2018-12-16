@@ -59,6 +59,7 @@ namespace Backup
                 }
                 catch (Exception ex)
                 {
+                    log.Error(ex);
                     // MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
