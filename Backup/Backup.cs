@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -11,6 +12,8 @@ namespace Backup
     public partial class Backup : Form
     {
         IniFile ini = new IniFile();
+
+        private static readonly ILogger log = new EventLogger();
         public Backup(string[] args)
         {
             try
@@ -22,7 +25,7 @@ namespace Backup
                 InitializeComponent();
                 if ((args.Length > 0 && args[0] == "backup") || (args.Length > 1 && args[1] == "backup"))
                 {
-                    backup(30);
+                    backup(30, null);
                     Environment.Exit(-1);
                 }
                 try
@@ -56,7 +59,7 @@ namespace Backup
                 }
                 catch (Exception ex)
                 {
-                   // MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -77,6 +80,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -93,6 +97,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -113,6 +118,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -125,6 +131,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -137,6 +144,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -153,6 +161,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -172,23 +181,28 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btBackup_Click(object sender, EventArgs e)
         {
-            backup(30);
+            lbLocations.Visible = false;
+            progressBar1.Maximum = 100;
+            progressBar1.Step = 1;
+            progressBar1.Value = 0;
+            progressBar1.Visible = true;
+            this.Height = 100;
+            backgroundWorker1.RunWorkerAsync();
         }
 
-        private void backup(int remove)
+        private void backup(int remove, BackgroundWorker backgroundWorker)
         {
             try
             {
-                lbLocations.Visible = false;
-                this.Height = 100;
-                progressBar1.Visible = true;
-
+                IniFile ini = new IniFile();
+                ILogger log = new EventLogger();
 
                 string prefix = string.Empty, dateFormat = string.Empty;
                 foreach (string kvp in ini.ReadKeyValuePairs("Common"))
@@ -218,14 +232,30 @@ namespace Backup
                     {
                         try
                         {
-                            dInfo.Delete(true);
+                            if (dInfo.Exists)
+                            {
+                                dInfo.Delete(true);
+                            }
                         }
-                        catch
+                        catch (Exception ex)
                         {
-
+                            log.Warn(dInfo.FullName);
+                            log.Error(ex);
                         }
                     }
                 }
+
+#if DEBUG
+                for (DateTime dt = new DateTime(2018, 9, 1); dt < DateTime.Today; dt = dt.AddDays(1))
+                {
+                    DirectoryInfo d = new DirectoryInfo(string.Format("{0}\\{1} {2:" + dateFormat + "}", folderpath, prefix, dt));
+                    if (!d.Exists)
+                    {
+                        d.Create();
+                        d.CreationTime = dt;
+                    }
+                }
+#endif
                 string DestinationPath = string.Format("{0}\\{1} {2:" + dateFormat + "}", folderpath, prefix, DateTime.Now);
 
 #if DEBUG
@@ -236,9 +266,9 @@ namespace Backup
                         Directory.Delete(DestinationPath, true);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    log.Error(ex);
                 }
 #endif
                 if (!Directory.Exists(DestinationPath))
@@ -253,9 +283,9 @@ namespace Backup
                             {
                                 fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name, true);
                             }
-                            catch
+                            catch (Exception ex)
                             {
-
+                                log.Error(ex);
                             }
                         }
                         else
@@ -277,13 +307,20 @@ namespace Backup
                                         {
                                             Directory.CreateDirectory(dirPath.Replace(dInfo.Parent.FullName, DestinationPath));
                                         }
-                                        catch
+                                        catch (Exception ex)
                                         {
-
+                                            log.Error(ex);
                                         }
                                         finally
                                         {
-                                            progressBar1.Value = (int)Math.Floor((100 / length) * i);
+                                            try
+                                            {
+                                                backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                log.Error(ex);
+                                            }
                                             i++;
                                         }
                                     }
@@ -295,21 +332,21 @@ namespace Backup
                                         {
                                             File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
                                         }
-                                        catch
+                                        catch (Exception ex)
                                         {
-
+                                            log.Error(ex);
                                         }
                                         finally
                                         {
-                                            progressBar1.Value = (int)Math.Floor((100 / length) * i);
+                                            backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
                                             i++;
                                         }
                                     }
                                 }
                             }
-                            catch
+                            catch (Exception ex)
                             {
-
+                                log.Error(ex);
                             }
                         }
                     }
@@ -321,6 +358,38 @@ namespace Backup
             }
             try
             {
+                backgroundWorker.ReportProgress(100);
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            backup(30, (BackgroundWorker)sender);
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            try
+            {
+                progressBar1.Value = e.ProgressPercentage;
+#if DEBUG
+                log.Debug(string.Format("{0:P0} complete", e.ProgressPercentage / 100));
+#endif
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            try
+            {
                 DialogResult dr = MessageBox.Show("Backup is gemaakt. Wilt u de computer nu uitzetten?", "Backup gereed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dr == DialogResult.Yes)
                 {
@@ -329,6 +398,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
+                log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

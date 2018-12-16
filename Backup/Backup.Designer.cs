@@ -54,6 +54,7 @@
             this.folderBrowserDialogTarget = new System.Windows.Forms.FolderBrowserDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.btBackup = new System.Windows.Forms.Button();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -289,6 +290,13 @@
             this.btBackup.UseVisualStyleBackColor = true;
             this.btBackup.Click += new System.EventHandler(this.btBackup_Click);
             // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            // 
             // Backup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -341,6 +349,7 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialogTarget;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button btBackup;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 
