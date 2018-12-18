@@ -14,6 +14,13 @@ namespace Backup
         IniFile ini = new IniFile();
 
         private static readonly ILogger log = new EventLogger();
+
+        private static readonly string[] excludeFileList = new string[]
+        {
+            "desktop.ini",
+            "Thumbs.db",
+            ".DS_Store"
+        };
         public Backup(string[] args)
         {
             try
@@ -282,7 +289,10 @@ namespace Backup
                         {
                             try
                             {
-                                fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name, true);
+                                if (!excludeFileList.Contains(fInfo.Name) && !excludeFileList.Contains(fInfo.Extension))
+                                {
+                                    fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name, true);
+                                }
                             }
                             catch (Exception ex)
                             {
