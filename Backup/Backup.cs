@@ -257,7 +257,7 @@ namespace Backup
                     }
                 }
 #endif
-                string DestinationPath = string.Format("{0}\\{1} {2:" + dateFormat + "}", folderpath, prefix, DateTime.Now);
+                string DestinationPath = string.Format("{0}\\{1}{2:" + dateFormat + "}", folderpath, (!string.IsNullOrWhiteSpace(prefix) ? prefix.Trim() + " " : ""), DateTime.Now);
 
 #if DEBUG
                 try

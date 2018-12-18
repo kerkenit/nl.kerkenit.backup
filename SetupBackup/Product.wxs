@@ -17,7 +17,7 @@
   <?define ProductName = "Backup" ?>
   
   
-  <Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.3.0.0" Manufacturer="$(var.Manufacturer)" UpgradeCode="89c614f5-a27c-4983-bd9c-f254fc3dd272">
+  <Product Id="*" Name="$(var.ProductName)" Language="1033" Version="1.3.1.0" Manufacturer="$(var.Manufacturer)" UpgradeCode="89c614f5-a27c-4983-bd9c-f254fc3dd272">
     <Package InstallerVersion="130" Compressed="yes" InstallScope="perMachine" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of $(var.ProductName) is already installed." />
