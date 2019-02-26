@@ -308,9 +308,13 @@
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btDelete);
             this.Controls.Add(this.lbLocations);
+            this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Backup";
             this.Text = "Backup";
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.Backup_HelpButtonClicked);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();

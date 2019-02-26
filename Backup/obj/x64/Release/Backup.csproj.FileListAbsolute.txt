@@ -6,4 +6,3 @@ C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Release\Backup.
 C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Release\Backup.csproj.GenerateResource.Cache
 C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Release\Backup.exe
 C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Release\Backup.pdb
-C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Release\Backup.csprojResolveAssemblyReference.cache

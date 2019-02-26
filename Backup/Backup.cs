@@ -320,8 +320,8 @@ namespace Backup
                                     DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
                                     if (dInfo.Exists)
                                     {
-                                        string[] dirs = Directory.GetDirectories(dInfo.Parent.FullName, "*", SearchOption.AllDirectories);
-                                        string[] files = Directory.GetFiles(dInfo.Parent.FullName, "*.*", SearchOption.AllDirectories);
+                                        string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
+                                        string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
                                         double length = dirs.Length + files.Length;
                                         double i = 1;
 
@@ -455,6 +455,13 @@ namespace Backup
                 log.Error(ex);
                 MessageBox.Show(ex.Message, "Fout", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void Backup_HelpButtonClicked(object sender, CancelEventArgs e)
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            MessageBox.Show(fvi.FileVersion, fvi.ProductName + " version", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }
