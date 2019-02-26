@@ -1,0 +1,6 @@
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\SetupBackup\bin\x64\Debug\SetupBackup.msi
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\SetupBackup\bin\x64\Debug\SetupBackup.wixpdb
+obj\x64\Debug\Product.wixobj
+obj\x64\Debug\SetupBackup.wixproj.BindContentsFileListnull.txt
+obj\x64\Debug\SetupBackup.wixproj.BindOutputsFileListnull.txt
+obj\x64\Debug\SetupBackup.wixproj.BindBuiltOutputsFileListnull.txt

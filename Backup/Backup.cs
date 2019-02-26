@@ -293,6 +293,14 @@ namespace Backup
                     {
                         try
                         {
+                            backgroundWorker.ReportProgress(0);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Info(ex);
+                        }
+                        try
+                        {
                             FileInfo fInfo = new FileInfo(source.Split('=')[1]);
                             if (fInfo.Exists && !excludeFileList.Contains(fInfo.Name) && !excludeFileList.Contains(fInfo.Extension))
                             {
@@ -312,8 +320,8 @@ namespace Backup
                                     DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
                                     if (dInfo.Exists)
                                     {
-                                        string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
-                                        string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
+                                        string[] dirs = Directory.GetDirectories(dInfo.Parent.FullName, "*", SearchOption.AllDirectories);
+                                        string[] files = Directory.GetFiles(dInfo.Parent.FullName, "*.*", SearchOption.AllDirectories);
                                         double length = dirs.Length + files.Length;
                                         double i = 1;
 
@@ -348,7 +356,10 @@ namespace Backup
                                         {
                                             try
                                             {
-                                                File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName.TrimEnd(Path.DirectorySeparatorChar), DestinationPath), true);
+                                                if (!excludeFileList.Contains(newPath) && !excludeFileList.Contains(newPath))
+                                                {
+                                                    File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName.TrimEnd(Path.DirectorySeparatorChar), DestinationPath), true);
+                                                }
                                             }
                                             catch (Exception ex)
                                             {
@@ -378,6 +389,15 @@ namespace Backup
                         catch (Exception ex)
                         {
                             log.Warn(ex);
+                        }
+
+                        try
+                        {
+                            backgroundWorker.ReportProgress(100);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Info(ex);
                         }
                     }
                 }
@@ -420,10 +440,14 @@ namespace Backup
         {
             try
             {
-                DialogResult dr = MessageBox.Show("Backup is gemaakt. Wilt u de computer nu uitzetten?", "Backup gereed", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                DialogResult dr = MessageBox.Show("Backup is gemaakt. Wilt u de computer nu uitzetten?", "Backup gereed", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                 if (dr == DialogResult.Yes)
                 {
                     Process.Start("shutdown.exe", "-s -t 0");
+                }
+                else if (dr == DialogResult.No)
+                {
+                    Environment.Exit(-1);
                 }
             }
             catch (Exception ex)

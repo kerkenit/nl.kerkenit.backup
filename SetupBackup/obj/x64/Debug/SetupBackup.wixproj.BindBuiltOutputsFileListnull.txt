@@ -1,0 +1,2 @@
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\SetupBackup\bin\x64\Debug\SetupBackup.msi
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\SetupBackup\bin\x64\Debug\SetupBackup.wixpdb
