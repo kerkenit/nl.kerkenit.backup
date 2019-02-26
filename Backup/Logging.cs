@@ -27,46 +27,60 @@ namespace Backup
                 EventLog.CreateEventSource(source, logName);
             }
         }
-        public void Debug(string text)
+
+        private void WriteEvent(string text, Exception ex, EventLogEntryType eventLogEntryType)
         {
             CreateEventSource();
 
-            using (EventLog eventLog = new EventLog(logName, machineName, source))
+            if (ex != null)
             {
-                eventLog.WriteEntry(text, EventLogEntryType.Information);
+                text += Environment.NewLine + Environment.NewLine + formatException(ex);
             }
-        }
-
-        public void Warn(string text)
-        {
-            CreateEventSource();
 
             using (EventLog eventLog = new EventLog(logName, machineName, source))
             {
-                eventLog.WriteEntry(text, EventLogEntryType.Warning);
+                eventLog.WriteEntry(text.Trim(Environment.NewLine.ToCharArray()), eventLogEntryType);
             }
         }
 
-        public void Error(string text)
+        [Obsolete("Only for debugging. For release use Logging.Info(string, Exception)")]
+        public void Debug(string text, Exception ex = null)
         {
-            CreateEventSource();
-
-            using (EventLog eventLog = new EventLog(logName, machineName, source))
-            {
-                eventLog.WriteEntry(text, EventLogEntryType.Error);
-            }
+#if DEBUG
+            WriteEvent(text, ex, EventLogEntryType.Information);
+#endif
         }
 
-        public void Error(string text, Exception ex)
+        public void Info(string text, Exception ex = null)
         {
-            Error(text);
-            Error(ex.StackTrace);
+            WriteEvent(text, ex, EventLogEntryType.Information);
+        }
+        public void Info(Exception ex)
+        {
+            Info(string.Empty, ex);
+        }
+
+        public void Warn(string text, Exception ex = null)
+        {
+            WriteEvent(text, ex, EventLogEntryType.Warning);
+        }
+        public void Warn(Exception ex)
+        {
+            Warn(string.Empty, ex);
+        }
+
+        public void Error(string text, Exception ex = null)
+        {
+            WriteEvent(text, ex, EventLogEntryType.Error);
         }
         public void Error(Exception ex)
         {
-            Error(ex.StackTrace);
-            Error(ex.Message);
-            Error(ex.Source);
+            Error(string.Empty, ex);
+        }
+
+        private string formatException(Exception ex)
+        {
+            return ex.StackTrace + Environment.NewLine + Environment.NewLine + ex.Message + Environment.NewLine + Environment.NewLine + ex.Source;
         }
     }
 }

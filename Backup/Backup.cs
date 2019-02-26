@@ -247,8 +247,15 @@ namespace Backup
                         }
                         catch (Exception ex)
                         {
-                            log.Warn(dInfo.FullName);
-                            log.Error(ex);
+                            log.Info(dInfo.FullName, ex);
+                            try
+                            {
+                                Directory.Delete(dInfo.FullName, true);
+                            }
+                            catch (Exception ex2)
+                            {
+                                log.Warn(dInfo.FullName, ex2);
+                            }
                         }
                     }
                 }
@@ -292,7 +299,6 @@ namespace Backup
                                 try
                                 {
                                     fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name, true);
-
                                 }
                                 catch (Exception ex)
                                 {
@@ -331,7 +337,7 @@ namespace Backup
                                                 }
                                                 catch (Exception ex)
                                                 {
-                                                    log.Error(ex);
+                                                    log.Info(ex);
                                                 }
                                                 i++;
                                             }
@@ -342,7 +348,7 @@ namespace Backup
                                         {
                                             try
                                             {
-                                                File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
+                                                File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName.TrimEnd(Path.DirectorySeparatorChar), DestinationPath), true);
                                             }
                                             catch (Exception ex)
                                             {
@@ -350,7 +356,14 @@ namespace Backup
                                             }
                                             finally
                                             {
-                                                backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
+                                                try
+                                                {
+                                                    backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    log.Info(ex);
+                                                }
                                                 i++;
                                             }
                                         }
@@ -358,13 +371,13 @@ namespace Backup
                                 }
                                 catch (Exception ex)
                                 {
-                                    log.Error(ex);
+                                    log.Warn(ex);
                                 }
                             }
                         }
                         catch (Exception ex)
                         {
-                            log.Error(ex);
+                            log.Warn(ex);
                         }
                     }
                 }
@@ -379,7 +392,7 @@ namespace Backup
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                log.Info(ex);
             }
         }
 

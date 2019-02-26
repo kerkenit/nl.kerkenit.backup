@@ -1,0 +1,8 @@
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\bin\x64\Debug\Backup.exe.config
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\bin\x64\Debug\Backup.exe
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\bin\x64\Debug\Backup.pdb
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Debug\Backup.Backup.resources
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Debug\Backup.Properties.Resources.resources
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Debug\Backup.csproj.GenerateResource.Cache
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Debug\Backup.exe
+C:\Users\info\Documents\GitHub\nl.kerkenit.backup\Backup\obj\x64\Debug\Backup.pdb

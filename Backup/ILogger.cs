@@ -7,12 +7,15 @@ namespace Backup
 {
     interface ILogger
     {
-        void Debug(string text);
+        [Obsolete("Only for debugging. For release use ILogger.Info(string, Exception)")]
+        void Debug(string text, Exception ex = null);
+        void Info(string text, Exception ex = null);
+        void Info(Exception ex);
 
-        void Warn(string text);
+        void Warn(string text, Exception ex = null);
+        void Warn(Exception ex);
 
-        void Error(string text);
-        void Error(string text, Exception ex);
+        void Error(string text, Exception ex = null);
         void Error(Exception ex);
     }
 }
