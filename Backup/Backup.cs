@@ -284,81 +284,87 @@ namespace Backup
                     Directory.CreateDirectory(DestinationPath);
                     foreach (string source in ini.ReadKeyValuePairs("Source"))
                     {
-                        FileInfo fInfo = new FileInfo(source.Split('=')[1]);
-                        if (fInfo.Exists)
+                        try
                         {
-                            try
+                            FileInfo fInfo = new FileInfo(source.Split('=')[1]);
+                            if (fInfo.Exists && !excludeFileList.Contains(fInfo.Name) && !excludeFileList.Contains(fInfo.Extension))
                             {
-                                if (!excludeFileList.Contains(fInfo.Name) && !excludeFileList.Contains(fInfo.Extension))
+                                try
                                 {
                                     fInfo.CopyTo(DestinationPath.TrimEnd('\\') + "\\" + fInfo.Name, true);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    log.Error(ex);
                                 }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                log.Error(ex);
-                            }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
-                                string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
-                                string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
-                                double length = dirs.Length + files.Length;
-                                double i = 1;
-                                if (dInfo.Exists)
+                                try
                                 {
-                                    //Now Create all of the directories
-
-                                    foreach (string dirPath in dirs)
+                                    DirectoryInfo dInfo = new DirectoryInfo(source.Split('=')[1]);
+                                    if (dInfo.Exists)
                                     {
-                                        try
-                                        {
-                                            Directory.CreateDirectory(dirPath.Replace(dInfo.Parent.FullName, DestinationPath));
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            log.Error(ex);
-                                        }
-                                        finally
+                                        string[] dirs = Directory.GetDirectories(dInfo.FullName, "*", SearchOption.AllDirectories);
+                                        string[] files = Directory.GetFiles(dInfo.FullName, "*.*", SearchOption.AllDirectories);
+                                        double length = dirs.Length + files.Length;
+                                        double i = 1;
+
+                                        //Now Create all of the directories
+
+                                        foreach (string dirPath in dirs)
                                         {
                                             try
                                             {
-                                                backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
+                                                Directory.CreateDirectory(dirPath.Replace(dInfo.Parent.FullName, DestinationPath));
                                             }
                                             catch (Exception ex)
                                             {
                                                 log.Error(ex);
                                             }
-                                            i++;
+                                            finally
+                                            {
+                                                try
+                                                {
+                                                    backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    log.Error(ex);
+                                                }
+                                                i++;
+                                            }
                                         }
-                                    }
 
-                                    //Copy all the files & Replaces any files with the same name
-                                    foreach (string newPath in files)
-                                    {
-                                        try
+                                        //Copy all the files & Replaces any files with the same name
+                                        foreach (string newPath in files)
                                         {
-                                            File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            log.Error(ex);
-                                        }
-                                        finally
-                                        {
-                                            backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
-                                            i++;
+                                            try
+                                            {
+                                                File.Copy(newPath, newPath.Replace(dInfo.Parent.FullName, DestinationPath), true);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                log.Error(ex);
+                                            }
+                                            finally
+                                            {
+                                                backgroundWorker.ReportProgress((int)Math.Floor((100 / length) * i));
+                                                i++;
+                                            }
                                         }
                                     }
                                 }
+                                catch (Exception ex)
+                                {
+                                    log.Error(ex);
+                                }
                             }
-                            catch (Exception ex)
-                            {
-                                log.Error(ex);
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Error(ex);
                         }
                     }
                 }
